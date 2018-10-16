@@ -27,7 +27,7 @@ data:
           eviction-interval-timer-in-ms: 5000
         client:
           register-with-eureka: true
-          fetch-registry: false
+          fetch-registry: true
           service-url:
             defaultZone: http://10.10.102.53:8761/eureka/,http://10.10.102.52:8761/eureka/
             #defaultZone: http://localhost:8761/eureka/
