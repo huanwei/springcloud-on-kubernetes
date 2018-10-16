@@ -1,0 +1,36 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: config-global-eureka1
+  namespace: kube-system
+data:
+  application.yml: |-
+      spring:
+        application:
+          name: eureka-1
+  application-peer1.yml: |-
+      server:
+        port: 8761
+      eureka:
+        datacenter: SpringCloud
+        environment: Demo
+        instance:
+          appname: eureka-1
+          #hostname: eureka-node-1
+          prefer-ip-address: true
+          instance-id: 10.10.102.53:8761
+          #instance-id: localhost:8761
+          lease-expiration-duration-in-seconds: 90
+        server:
+          enable-self-preservation: true
+          #5秒清理一次
+          eviction-interval-timer-in-ms: 5000
+        client:
+          register-with-eureka: true
+          fetch-registry: false
+          service-url:
+            defaultZone: http://10.10.102.56:8761/eureka/,http://10.10.102.52:8761/eureka/
+            #defaultZone: http://localhost:8761/eureka/
+      #logging:
+        #config: classpath:logback-test.xml
+

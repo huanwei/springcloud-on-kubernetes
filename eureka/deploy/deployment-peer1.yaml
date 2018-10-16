@@ -1,0 +1,49 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: kube-system
+  name: global-eureka1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: global-eureka1
+  template:
+    metadata:
+      namespace: kube-system
+      labels:
+        run: global-eureka1
+    spec:
+      containers:
+      - name: eureka0
+        image: huanwei/springcloud-eureka:v0.1
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 8761
+            hostPort: 8761
+            protocol: TCP
+        resources:
+          limits:
+            cpu: "1"
+            memory: "1Gi"
+          requests:
+            cpu: "0.5"
+            memory: "500Mi"
+        command:
+        - java
+        args:
+        - "-Djava.security.egd=file:/dev/./urandom"
+        - "-jar"
+        - "eureka.jar"
+        - "--spring.config.location=/tmp/config/"
+        - "--spring.profiles.active=peer1"
+        volumeMounts:
+          - mountPath: "/tmp/config"
+            name: eureka-config-volume
+      dnsPolicy: ClusterFirst
+      hostNetwork: true
+      volumes:
+        - configMap:
+            name: config-global-eureka1
+          name: eureka-config-volume
+
