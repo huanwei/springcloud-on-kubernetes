@@ -1,0 +1,33 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: kube-system
+  name: global-zipkin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      global-zipkin: "on"
+  template:
+    metadata:
+      namespace: kube-system
+      labels:
+        global-zipkin: "on"
+    spec:
+      containers:
+      - name: zipkin
+        image: openzipkin/zipkin
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 9411
+            hostPort: 9411
+            protocol: TCP
+        resources:
+          limits:
+            cpu: "1"
+            memory: "1Gi"
+          requests:
+            cpu: "0.5"
+            memory: "500Mi"
+      dnsPolicy: ClusterFirst
+      hostNetwork: true
