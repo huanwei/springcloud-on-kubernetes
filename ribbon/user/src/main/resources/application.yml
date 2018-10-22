@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: user
+
+server:
+  port: 8888
+
+#ribbon config
+say-hello:
+  ribbon:
+    eureka:
+      enabled: false
+    listOfServers: localhost:8090,localhost:8091
+    ServerListRefreshInterval: 15000
