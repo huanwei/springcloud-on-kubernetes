@@ -24,6 +24,8 @@ public class CustomRouteLocator extends SimpleRouteLocator implements Refreshabl
 
     private ZuulProperties zuulProperties;
 
+    private static ZuulProperties.ZuulRoute zuulRoute = new ZuulProperties.ZuulRoute();
+
     public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -74,7 +76,6 @@ public class CustomRouteLocator extends SimpleRouteLocator implements Refreshabl
             if (org.apache.commons.lang3.StringUtils.isBlank(result.getPath()) || org.apache.commons.lang3.StringUtils.isBlank(result.getUrl())) {
                 continue;
             }
-            ZuulProperties.ZuulRoute zuulRoute = new ZuulProperties.ZuulRoute();
             try {
                 org.springframework.beans.BeanUtils.copyProperties(result, zuulRoute);
             } catch (Exception e) {
@@ -84,8 +85,6 @@ public class CustomRouteLocator extends SimpleRouteLocator implements Refreshabl
         }
         return routes;
     }
-
-
 
 
     public static class ZuulRouteVO {
