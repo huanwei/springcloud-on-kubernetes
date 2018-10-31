@@ -1,0 +1,38 @@
+server:
+  port: 9411
+  tomcat:
+    uri-encoding: utf-8
+
+spring:
+  application:
+    name: zipkin-server
+
+zipkin:
+  ui:
+    environment: abcd
+  storage:
+    type: elasticsearch
+    elasticsearch:
+      hosts: http://10.100.100.129:9200
+      cluster: elasticsearch
+      index: zipkin
+      index-shards: 1
+      index-replicas: 1
+  collector:
+    kafka:
+     bootstrap-servers: 10.100.100.129:9092
+     zookeeper: 10.100.100.129:2181
+     topic: zipkin # 建议手动创建kafka-topic 默认是sleuth
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+  metrics:
+    web:
+      server:
+        auto-time-requests: false
