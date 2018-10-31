@@ -1,6 +1,5 @@
-import com.netflix.hystrix.*;
-import com.netflix.hystrix.exception.HystrixRuntimeException;
-import com.netflix.hystrix.exception.HystrixTimeoutException;
+import com.netflix.hystrix.HystrixCommand;
+import com.netflix.hystrix.HystrixCommandGroupKey;
 
 
 //run依赖调用失败触发降级

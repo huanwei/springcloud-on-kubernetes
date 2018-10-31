@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(path = "/")
 public class Healthz {
-    @GetMapping(path = "/healthz",produces = MediaType.TEXT_PLAIN_VALUE)
-    public String healthz(){
+    @GetMapping(path = "/healthz", produces = MediaType.TEXT_PLAIN_VALUE)
+    public String healthz() {
         return "ok";
     }
 }

@@ -15,7 +15,7 @@ import java.util.Map;
 public class ZuulApi {
 
     @RequestMapping("/healthz")
-    public String healthz(){
+    public String healthz() {
         return "ok";
     }
 
@@ -23,7 +23,7 @@ public class ZuulApi {
     RefreshRouteService refreshRouteService;
 
     @RequestMapping("/refreshRoute")
-    public String refreshRoute(){
+    public String refreshRoute() {
         refreshRouteService.refreshRoute();
         return "refreshRoute";
     }
@@ -34,6 +34,6 @@ public class ZuulApi {
     @RequestMapping("/watchRoute")
     public String watchRoute() {
         Map<String, Object> handlerMap = zuulHandlerMapping.getHandlerMap();
-        return "watchRoute: "+ handlerMap.toString();
+        return "watchRoute: " + handlerMap.toString();
     }
 }

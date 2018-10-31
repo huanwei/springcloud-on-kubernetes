@@ -26,7 +26,7 @@ class MyFilter extends ZuulFilter {
         RequestContext context = RequestContext.getCurrentContext()
         def request = context.getRequest()
         def pwd = request.getParameter("pwd")
-        if(!"123".equals(pwd)){
+        if (!"123".equals(pwd)) {
             context.setSendZuulResponse(false)
             context.setResponseStatusCode(401)
             context.getResponse().getWriter().write("this is filter")

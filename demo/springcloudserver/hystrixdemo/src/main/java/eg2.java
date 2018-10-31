@@ -1,7 +1,5 @@
 import com.netflix.hystrix.*;
 
-import java.util.Map;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 //熔断触发降级
@@ -37,19 +35,19 @@ public class eg2 extends HystrixCommand<String> {
 //            System.out.println("ok :" + name+"     CircuitBreaker:"+this.isCircuitBreakerOpen());
 //            return name;
 //        } else {
-            TimeUnit.MILLISECONDS.sleep(2000);
-            return name;
+        TimeUnit.MILLISECONDS.sleep(2000);
+        return name;
 //        }
     }
 
     @Override
     protected String getFallback() {
-        return "fallback: " + name+"    CircuitBreaker:"+this.isCircuitBreakerOpen();
+        return "fallback: " + name + "    CircuitBreaker:" + this.isCircuitBreakerOpen();
     }
 
     public static void main(String[] args) throws Exception {
         for (int i = 0; i < 10; i++) {
-            System.out.println("===========" +new eg2(String.valueOf(i)).execute());
+            System.out.println("===========" + new eg2(String.valueOf(i)).execute());
 
         }
     }
