@@ -24,7 +24,9 @@ public class BookuserController {
     @HystrixCommand(fallbackMethod = "fallback")
     @RequestMapping("/get")
     public String getBook() {
-        return "feign " + port + ": " + bookuserApi.getBook();
+        String result = bookuserApi.getBook();
+        System.out.println("getBook()");
+        return "feign " + port + ": " + result;
     }
 
     @HystrixCommand(fallbackMethod = "fallback")
@@ -40,6 +42,7 @@ public class BookuserController {
     }
 
     public String fallback() {
+        System.out.println("fallback()");
         return "fallback()";
     }
 

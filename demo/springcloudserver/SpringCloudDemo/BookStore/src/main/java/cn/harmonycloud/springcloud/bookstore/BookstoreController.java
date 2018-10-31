@@ -20,7 +20,7 @@ public class BookstoreController {
     @HystrixCommand(fallbackMethod = "fallback")
     public String getBook() {
         try {
-            Thread.sleep(1500);
+            Thread.sleep(4000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
