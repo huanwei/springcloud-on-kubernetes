@@ -31,12 +31,11 @@ class MyFilter extends ZuulFilter {
     int filterOrder() {
         return 501
     }
-
+  
     @Override
     boolean shouldFilter() {
         return true
     }
-
 //    @Override
 //    Object run(){
 //        RequestContext context = RequestContext.getCurrentContext()

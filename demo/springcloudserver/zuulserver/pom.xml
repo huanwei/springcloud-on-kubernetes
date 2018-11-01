@@ -13,7 +13,6 @@
         <!--<version>2.0.1.RELEASE</version>-->
         <version>1.5.2.RELEASE</version>
     </parent>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -108,7 +107,6 @@
             <artifactId>gmaven-runtime-default</artifactId>
             <version>1.0-rc-3</version>
         </dependency>
-
         <!-- Ribbon -->
         <dependency>
             <groupId>com.netflix.ribbon</groupId>

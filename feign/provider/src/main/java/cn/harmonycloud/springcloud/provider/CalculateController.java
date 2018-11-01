@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class CalculateController {
 
     @PostMapping("/add")
-    public Integer add(@RequestParam Integer a, @RequestParam Integer b){
-        return a+b;
+    public Integer add(@RequestParam Integer a, @RequestParam Integer b) {
+        return a + b;
     }
 
     @PostMapping("/subtract")
-    public Integer subtract(@RequestParam Integer a,@RequestParam Integer b){
-        return a-b;
+    public Integer subtract(@RequestParam Integer a, @RequestParam Integer b) {
+        return a - b;
     }
 
 }

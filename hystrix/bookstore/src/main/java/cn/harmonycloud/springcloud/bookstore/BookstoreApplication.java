@@ -10,10 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @SpringBootApplication
-public class BookstoreApplication
-{
+public class BookstoreApplication {
     @RequestMapping(value = "/recommended")
-    public String readingList(){
+    public String readingList() {
         return "Spring in Action (Manning), Cloud Native Java (O'Reilly), Learning Spring Boot (Packt)";
     }
 
