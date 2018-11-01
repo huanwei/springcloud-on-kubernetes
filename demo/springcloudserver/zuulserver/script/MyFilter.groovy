@@ -29,7 +29,7 @@ class MyFilter extends ZuulFilter {
 
     @Override
     int filterOrder() {
-        return 1
+        return 501
     }
 
     @Override
@@ -76,18 +76,18 @@ class MyFilter extends ZuulFilter {
         }
 
         ConfigurationManager.getConfigInstance().setProperty(serviceId + ".ribbon.listOfServers", servicesStr.toString())
-        String str = LoadbalancerFactory.get(serviceId) + uri;
+        String str = "/" +LoadbalancerFactory.get(serviceId)+ uri;
         println(str)
 //        context.set("forward.to",str)
-        context.getResponse().sendRedirect("http://" + str)
-//        RequestDispatcher dispatcher = context.getRequest().getRequestDispatcher(str)
-//        if (dispatcher != null) {
-//            context.set("sendForwardFilter.ran", true);
-//            if (!context.getResponse().isCommitted()) {
-//                dispatcher.forward(context.getRequest(), context.getResponse());
-//                context.getResponse().flushBuffer();
-//            }
-//        }
+//        context.getResponse().sendRedirect("http://" + str)
+        RequestDispatcher dispatcher = context.getRequest().getRequestDispatcher(str)
+        if (dispatcher != null) {
+            context.set("sendForwardFilter.ran", true);
+            if (!context.getResponse().isCommitted()) {
+                dispatcher.forward(context.getRequest(), context.getResponse());
+                context.getResponse().flushBuffer();
+            }
+        }
         return null
     }
 }
