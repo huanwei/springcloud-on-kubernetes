@@ -2,6 +2,7 @@ package cn.harmonycloud.springcloud.zuul.route;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.cloud.netflix.zuul.filters.RefreshableRouteLocator;
 import org.springframework.cloud.netflix.zuul.filters.SimpleRouteLocator;
 import org.springframework.cloud.netflix.zuul.filters.ZuulProperties;
@@ -24,7 +25,7 @@ public class CustomRouteLocator extends SimpleRouteLocator implements Refreshabl
 
     private ZuulProperties zuulProperties;
 
-    static ZuulProperties.ZuulRoute zuulRoute = new ZuulProperties.ZuulRoute();
+//    static ZuulProperties.ZuulRoute zuulRoute = new ZuulProperties.ZuulRoute();
 
     public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -76,7 +77,7 @@ public class CustomRouteLocator extends SimpleRouteLocator implements Refreshabl
             if (org.apache.commons.lang3.StringUtils.isBlank(result.getPath())) {
                 continue;
             }
-//            ZuulProperties.ZuulRoute zuulRoute = new ZuulProperties.ZuulRoute();
+            ZuulProperties.ZuulRoute zuulRoute = new ZuulProperties.ZuulRoute();
             try {
                 org.springframework.beans.BeanUtils.copyProperties(result, zuulRoute);
             } catch (Exception e) {
@@ -84,6 +85,7 @@ public class CustomRouteLocator extends SimpleRouteLocator implements Refreshabl
             }
             routes.put(zuulRoute.getPath(), zuulRoute);
         }
+
         return routes;
     }
 
