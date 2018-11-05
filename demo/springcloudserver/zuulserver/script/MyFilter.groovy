@@ -13,23 +13,14 @@ import javax.servlet.RequestDispatcher
 
 @Component
 class MyFilter extends ZuulFilter {
-    ILoadBalancer loadBalancer
-//    ILoadBalancer loadBalancer
-//
-//    static {
-//        ConfigurationManager.getConfigInstance()
-//                .setProperty("RibbonClient.ribbon.listOfServers", "")
-//        loadBalancer = ClientFactory.getNamedLoadBalancer("RibbonClient")
-//    }
-
     @Override
     String filterType() {
-        return "post"
+        return "route"
     }
 
     @Override
     int filterOrder() {
-        return 501
+        return 11
     }
 
     @Override
@@ -37,22 +28,13 @@ class MyFilter extends ZuulFilter {
         return true
     }
 
-//    @Override
-//    Object run(){
-//        RequestContext context = RequestContext.getCurrentContext()
-////        context.set("serviceId", "SERVICE-BOOK-V2")
-//        context.set("serviceId", "SERVICE-BOOKSTORE-VERSION2.0")
-//        def str = context.get("serviceId").toString()
-////        context.getResponse().getWriter().write(str)
-//        return null
-//    }
-
     @Override
     Object run() {
         RequestContext context = RequestContext.getCurrentContext()
         String serviceId = context.get("serviceId")
         println(serviceId)
         def request = context.getRequest()
+        def response = context.getResponse()
 
         String v = request.getParameter("version")
         if (v == null || v.equals(""))
@@ -60,7 +42,7 @@ class MyFilter extends ZuulFilter {
 
         String uri = request.getRequestURI().split(context.getZuulRequestHeaders().get("x-forwarded-prefix"))[1];
 
-        JSONObject result = JSONObject.parseObject(new RestTemplate().getForObject("http://10.10.102.53:8761//eureka/apps/" + context.get("serviceId").toString() + "/", String.class))
+        JSONObject result = JSONObject.parseObject(new RestTemplate().getForObject("http://10.10.102.53:8761/eureka/apps/" + context.get("serviceId").toString() + "/", String.class))
         JSONArray resultList = result.getJSONObject("application").getJSONArray("instance")
         StringBuffer servicesStr = new StringBuffer()
         for (Object instaceService : resultList) {
@@ -76,18 +58,13 @@ class MyFilter extends ZuulFilter {
         }
 
         ConfigurationManager.getConfigInstance().setProperty(serviceId + ".ribbon.listOfServers", servicesStr.toString())
-        String str = "/" +LoadbalancerFactory.get(serviceId)+ uri;
+        String str = "http://" + LoadbalancerFactory.get(serviceId) + uri;
         println(str)
-//        context.set("forward.to",str)
-//        context.getResponse().sendRedirect("http://" + str)
-        RequestDispatcher dispatcher = context.getRequest().getRequestDispatcher(str)
-        if (dispatcher != null) {
-            context.set("sendForwardFilter.ran", true);
-            if (!context.getResponse().isCommitted()) {
-                dispatcher.forward(context.getRequest(), context.getResponse());
-                context.getResponse().flushBuffer();
-            }
-        }
+        context.setSendZuulResponse(false)
+        RestTemplate rs = new RestTemplate();
+        String val = rs.getForObject(str, String.class).toString()
+        println(val)
+        context.getResponse().getWriter().write(val)
         return null
     }
 }
