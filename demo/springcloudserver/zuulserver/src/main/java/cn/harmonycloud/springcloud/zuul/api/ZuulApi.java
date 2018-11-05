@@ -23,7 +23,7 @@ public class ZuulApi {
     RefreshRouteService refreshRouteService;
 
     @RequestMapping("/refreshRoute")
-    public String refreshRoute(){
+    public String refreshRoute() {
         refreshRouteService.refreshRoute();
         return "refreshRoute";
     }

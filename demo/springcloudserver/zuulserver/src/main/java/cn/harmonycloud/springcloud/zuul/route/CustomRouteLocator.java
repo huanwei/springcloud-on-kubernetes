@@ -85,7 +85,7 @@ public class CustomRouteLocator extends SimpleRouteLocator implements Refreshabl
             }
             routes.put(zuulRoute.getPath(), zuulRoute);
         }
-        System.out.println(routes.toString());
+
         return routes;
     }
 

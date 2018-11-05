@@ -16,11 +16,11 @@
             <version>1.5.12</version>
         </dependency>
 
-    <dependency>
-        <groupId>com.netflix.hystrix</groupId>
-        <artifactId>hystrix-metrics-event-stream</artifactId>
-        <version>1.5.12</version>
-    </dependency>
+        <dependency>
+            <groupId>com.netflix.hystrix</groupId>
+            <artifactId>hystrix-metrics-event-stream</artifactId>
+            <version>1.5.12</version>
+        </dependency>
     </dependencies>
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
