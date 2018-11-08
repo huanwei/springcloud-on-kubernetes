@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.netflix.turbine</groupId>
-  <artifactId>turbine-core</artifactId>
+  <artifactId>hc-turbine-core</artifactId>
   <version>1.0.0</version>
   <name>turbine-core</name>
   <description>turbine-core developed by Netflix</description>
