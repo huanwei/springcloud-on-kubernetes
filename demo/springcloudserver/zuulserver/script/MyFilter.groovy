@@ -1,92 +1,148 @@
 package cn.harmonycloud.springcloud.zuul.filter
 
+import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
+import com.netflix.client.http.HttpRequest
+import com.netflix.client.http.HttpResponse
 import com.netflix.config.ConfigurationManager
-import com.netflix.loadbalancer.ILoadBalancer
+import com.netflix.util.Pair
 import com.netflix.zuul.ZuulFilter
 import com.netflix.zuul.context.RequestContext
+import com.netflix.zuul.util.HTTPRequestUtils
+import io.reactivex.netty.protocol.http.server.HttpServerResponse
+import org.apache.catalina.connector.CoyoteWriter
+import org.apache.http.client.HttpClient
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
 
-import javax.servlet.RequestDispatcher
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
+import java.util.zip.GZIPInputStream
+import java.util.zip.ZipException
 
 @Component
 class MyFilter extends ZuulFilter {
-    ILoadBalancer loadBalancer
-//    ILoadBalancer loadBalancer
-//
-//    static {
-//        ConfigurationManager.getConfigInstance()
-//                .setProperty("RibbonClient.ribbon.listOfServers", "")
-//        loadBalancer = ClientFactory.getNamedLoadBalancer("RibbonClient")
-//    }
-
     @Override
     String filterType() {
-        return "post"
+        return "route"
     }
 
     @Override
     int filterOrder() {
-        return 501
+        return 1
     }
-  
+
     @Override
     boolean shouldFilter() {
         return true
     }
-//    @Override
-//    Object run(){
-//        RequestContext context = RequestContext.getCurrentContext()
-////        context.set("serviceId", "SERVICE-BOOK-V2")
-//        context.set("serviceId", "SERVICE-BOOKSTORE-VERSION2.0")
-//        def str = context.get("serviceId").toString()
-////        context.getResponse().getWriter().write(str)
-//        return null
-//    }
 
     @Override
     Object run() {
         RequestContext context = RequestContext.getCurrentContext()
-        String serviceId = context.get("serviceId")
-        println(serviceId)
-        def request = context.getRequest()
 
-        String v = request.getParameter("version")
+        String v = context.getRequest().getParameter("version")
         if (v == null || v.equals(""))
             return null
 
-        String uri = request.getRequestURI().split(context.getZuulRequestHeaders().get("x-forwarded-prefix"))[1];
+        JSONObject result = JSONObject.parseObject(new RestTemplate().getForObject("http://10.10.102.53:8761/eureka/apps/" + context.get("serviceId").toString() + "/", String.class))
+        ConfigurationManager.getConfigInstance().setProperty(context.get("serviceId").toString() + ".ribbon.listOfServers", getServiceStr(result, "8762"))
 
-        JSONObject result = JSONObject.parseObject(new RestTemplate().getForObject("http://10.10.102.53:8761//eureka/apps/" + context.get("serviceId").toString() + "/", String.class))
-        JSONArray resultList = result.getJSONObject("application").getJSONArray("instance")
-        StringBuffer servicesStr = new StringBuffer()
-        for (Object instaceService : resultList) {
-            instaceService = (JSONObject) instaceService
-            String version = instaceService.getString("instanceId").split(":")[3]
-            if (version.equals(v)) {
-                if (servicesStr.length() != 0) {
-                    servicesStr.append(",")
-                }
-                String ipAddress = instaceService.getString("ipAddr")
-                servicesStr.append(ipAddress + ":" + instaceService.getJSONObject("port").getString("\$"))
-            }
-        }
+        String s = context.getZuulRequestHeaders().get("x-forwarded-prefix");
+        String pix = context.getRequest().getRequestURI().split(s)[1];
+        String url = "http://" + LoadbalancerFactory.get(context.get("serviceId").toString()) + pix
+        println(url)
 
-        ConfigurationManager.getConfigInstance().setProperty(serviceId + ".ribbon.listOfServers", servicesStr.toString())
-        String str = "/" +LoadbalancerFactory.get(serviceId)+ uri;
-        println(str)
-//        context.set("forward.to",str)
-//        context.getResponse().sendRedirect("http://" + str)
-        RequestDispatcher dispatcher = context.getRequest().getRequestDispatcher(str)
-        if (dispatcher != null) {
-            context.set("sendForwardFilter.ran", true);
-            if (!context.getResponse().isCommitted()) {
-                dispatcher.forward(context.getRequest(), context.getResponse());
-                context.getResponse().flushBuffer();
-            }
-        }
-        return null
+//        String val = new RestTemplate().getForObject(url, String.class)
+//        context.setResponseBody(val)
+
+        HttpServletResponse response = this.httpRequest(url,this.getVerb(context.getRequest()),context.getRequest().getParameterMap(),context.getResponse())
+        context.setSendZuulResponse(false)
+
+        return response
     }
+
+
+    String getServiceStr(JSONObject obj, String v) {
+        StringBuffer sb = new StringBuffer();
+
+        JSONArray resultList = obj.getJSONObject("application").getJSONArray("instance");
+        for (Object rs : resultList) {
+            JSONObject instaceService = (JSONObject) rs;
+            String version = instaceService.getString("instanceId").split(":")[2];
+            if (version.equals(v)) {
+                if (sb.length() != 0) {
+                    sb.append(",");
+                }
+                String ipAddress = instaceService.getString("ipAddr");
+                sb.append(ipAddress + ":" + instaceService.getJSONObject("port").getString("\$"));
+            }
+        }
+
+        return sb.toString();
+    }
+
+
+    HttpServletResponse httpRequest(String requestUrl,
+                                          String requestMethod,
+                                          Map<String, String> requestParameters,
+                                          HttpServletResponse response) throws IOException {
+        try {
+            URL url = new URL(requestUrl)
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection()
+            conn.setDoOutput(true)
+            conn.setDoInput(true)
+            conn.setRequestMethod(requestMethod)
+            conn.setRequestProperty("content-type", "text/html")//设置内容类型
+
+            // 使用输出流添加数据至请求体
+            if (requestParameters.size() != 0) {
+                String json = JSON.toJSON(requestParameters)
+                OutputStream os = conn.getOutputStream();//获取输出流
+                os.write(json.getBytes())//写入
+                os.flush()
+            }
+            conn.connect(); // 读取服务器端返回的内容
+            InputStream is = conn.getInputStream();
+            InputStreamReader isr = new InputStreamReader(is, "utf-8");
+            BufferedReader br = new BufferedReader(isr);
+            String line;
+            StringBuffer sb = new StringBuffer()
+
+            while ((line = br.readLine()) != null) {
+                sb.append(line)
+            }
+
+            response.getWriter().write(sb.toString())
+
+            return response;
+        } catch (Exception e) {
+            logger.error("http请求异常", e); throw e;
+        }
+    }
+
+    String getVerb(HttpServletRequest request) {
+        String method = request.getMethod();
+        return method == null ? "GET" : method;
+    }
+//    String getServiceStr(JSONObject obj, String v) {
+//        StringBuffer sb = new StringBuffer();
+//
+//        JSONArray resultList = obj.getJSONObject("application").getJSONArray("instance");
+//        for (Object rs : resultList) {
+//            JSONObject instaceService = (JSONObject) rs;
+//            String version = instaceService.getString("instanceId").split(":")[3];
+//            if (version.equals(v)) {
+//                if (sb.length() != 0) {
+//                    sb.append(",");
+//                }
+//                String ipAddress = instaceService.getString("ipAddr");
+//                sb.append(ipAddress + ":" + instaceService.getJSONObject("port").getString("\$"));
+//            }
+//        }
+//
+//        return sb.toString();
+//    }
+
 }
