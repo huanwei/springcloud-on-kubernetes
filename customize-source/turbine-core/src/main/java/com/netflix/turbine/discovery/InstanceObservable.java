@@ -101,8 +101,8 @@ public class InstanceObservable {
         return INSTANCE;
     }
 
-    // how often to run
-    private final DynamicIntProperty pollDelayMillis = DynamicPropertyFactory.getInstance().getIntProperty("turbine.discovery.pollDelayMillis", 60000);
+    // how often to run, set from 60s to 15s
+    private final DynamicIntProperty pollDelayMillis = DynamicPropertyFactory.getInstance().getIntProperty("turbine.discovery.pollDelayMillis", 15000);
     // thread safe reference to the current state. Also used to diff with next state to understand if any host dropped out. 
     private final AtomicReference<CurrentState> currentState = new AtomicReference<CurrentState>(new CurrentState()); 
     // thread safe map of observers. 
