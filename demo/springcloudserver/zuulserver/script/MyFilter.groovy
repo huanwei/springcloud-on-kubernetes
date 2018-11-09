@@ -3,23 +3,14 @@ package cn.harmonycloud.springcloud.zuul.filter
 import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
-import com.netflix.client.http.HttpRequest
-import com.netflix.client.http.HttpResponse
 import com.netflix.config.ConfigurationManager
-import com.netflix.util.Pair
 import com.netflix.zuul.ZuulFilter
 import com.netflix.zuul.context.RequestContext
-import com.netflix.zuul.util.HTTPRequestUtils
-import io.reactivex.netty.protocol.http.server.HttpServerResponse
-import org.apache.catalina.connector.CoyoteWriter
-import org.apache.http.client.HttpClient
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import java.util.zip.GZIPInputStream
-import java.util.zip.ZipException
 
 @Component
 class MyFilter extends ZuulFilter {
@@ -94,7 +85,7 @@ class MyFilter extends ZuulFilter {
             conn.setDoOutput(true)
             conn.setDoInput(true)
             conn.setRequestMethod(requestMethod)
-            conn.setRequestProperty("content-type", "text/html")//设置内容类型
+            conn.setRequestProperty("content-type", "text/html")
 
             // 使用输出流添加数据至请求体
             if (requestParameters.size() != 0) {
@@ -118,7 +109,7 @@ class MyFilter extends ZuulFilter {
 
             return response;
         } catch (Exception e) {
-            logger.error("http请求异常", e); throw e;
+            logger.error("http request exception", e); throw e;
         }
     }
 
@@ -126,23 +117,5 @@ class MyFilter extends ZuulFilter {
         String method = request.getMethod();
         return method == null ? "GET" : method;
     }
-//    String getServiceStr(JSONObject obj, String v) {
-//        StringBuffer sb = new StringBuffer();
-//
-//        JSONArray resultList = obj.getJSONObject("application").getJSONArray("instance");
-//        for (Object rs : resultList) {
-//            JSONObject instaceService = (JSONObject) rs;
-//            String version = instaceService.getString("instanceId").split(":")[3];
-//            if (version.equals(v)) {
-//                if (sb.length() != 0) {
-//                    sb.append(",");
-//                }
-//                String ipAddress = instaceService.getString("ipAddr");
-//                sb.append(ipAddress + ":" + instaceService.getJSONObject("port").getString("\$"));
-//            }
-//        }
-//
-//        return sb.toString();
-//    }
 
 }
