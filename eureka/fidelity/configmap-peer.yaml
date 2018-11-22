@@ -1,0 +1,30 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: config-global-eureka
+  namespace: kube-system
+data:
+  application.yml: |-
+      spring:
+        application:
+          name: eureka
+  application-peer0.yml: |-
+      server:
+        port: 8761
+      eureka:
+        datacenter: SpringCloud
+        environment: Demo
+        instance:
+          appname: eureka
+          prefer-ip-address: true
+          instance-id: 192.168.1.42:8761
+          lease-expiration-duration-in-seconds: 90
+        server:
+          enable-self-preservation: true
+          #5秒清理一次
+          eviction-interval-timer-in-ms: 5000
+        client:
+          register-with-eureka: false
+          fetch-registry: false
+          service-url:
+            #defaultZone: http://192.168.1.42:8761/eureka/
