@@ -7,13 +7,15 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      global-zuul: "on"
+      harmonycloud.cn/fidelity: demo
   template:
     metadata:
       namespace: kube-system
       labels:
-        global-zuul: "on"
+        harmonycloud.cn/fidelity: demo
     spec:
+      nodeSelector:
+        harmonycloud.cn/fidelity: demo
       containers:
       - name: zuul
         image: huanwei/springcloud-zuul:v0.1
