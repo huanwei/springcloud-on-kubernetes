@@ -26,7 +26,7 @@ class MyFilter extends ZuulFilter {
 
     @Override
     boolean shouldFilter() {
-        return true
+        return false
     }
 
     @Override

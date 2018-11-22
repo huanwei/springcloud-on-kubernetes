@@ -133,7 +133,7 @@
             <artifactId>ribbon-loadbalancer</artifactId>
             <version>${ribbon.version}</version>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-redis</artifactId>
             <version>1.4.7.RELEASE</version>
@@ -141,7 +141,7 @@
         <dependency>
             <groupId>org.springframework.session</groupId>
             <artifactId>spring-session-data-redis</artifactId>
-        </dependency>
+        </dependency>-->
 
     </dependencies>
     <build>
