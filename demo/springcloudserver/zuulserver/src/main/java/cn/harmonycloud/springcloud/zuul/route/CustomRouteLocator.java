@@ -10,9 +10,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.StringUtils;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by huan on 2018/10/17.
@@ -72,7 +70,7 @@ public class CustomRouteLocator extends SimpleRouteLocator implements Refreshabl
 
     private Map<String, ZuulProperties.ZuulRoute> locateRoutesFromDB() {
         Map<String, ZuulProperties.ZuulRoute> routes = new LinkedHashMap<>();
-        List<ZuulRouteVO> results = jdbcTemplate.query("select * from gateway_api_define where enabled = true ", new BeanPropertyRowMapper<>(ZuulRouteVO.class));
+        List<ZuulRouteVO> results = jdbcTemplate.query("select * from route where enabled = true ", new BeanPropertyRowMapper<>(ZuulRouteVO.class));
         for (ZuulRouteVO result : results) {
             if (org.apache.commons.lang3.StringUtils.isBlank(result.getPath())) {
                 continue;
@@ -83,6 +81,9 @@ public class CustomRouteLocator extends SimpleRouteLocator implements Refreshabl
             } catch (Exception e) {
                 logger.error("load zuul route info from db with error", e);
             }
+            Set<String> set = new HashSet<String>();
+            set.add("*");
+            zuulRoute.setSensitiveHeaders(set);
             routes.put(zuulRoute.getPath(), zuulRoute);
         }
 

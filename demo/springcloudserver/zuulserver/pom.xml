@@ -91,8 +91,8 @@
             <version>2.0.1.RELEASE</version>
         </dependency>
         <!--<dependency>-->
-            <!--<groupId>org.springframework.cloud</groupId>-->
-            <!--<artifactId>spring-cloud-starter-eureka</artifactId>-->
+        <!--<groupId>org.springframework.cloud</groupId>-->
+        <!--<artifactId>spring-cloud-starter-eureka</artifactId>-->
         <!--</dependency>-->
 
         <dependency>
@@ -132,6 +132,15 @@
             <groupId>com.netflix.ribbon</groupId>
             <artifactId>ribbon-loadbalancer</artifactId>
             <version>${ribbon.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-redis</artifactId>
+            <version>1.4.7.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.session</groupId>
+            <artifactId>spring-session-data-redis</artifactId>
         </dependency>
 
     </dependencies>

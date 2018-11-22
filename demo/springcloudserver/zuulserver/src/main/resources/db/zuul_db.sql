@@ -18,10 +18,10 @@ SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
--- Table structure for gateway_api_define
+-- Table structure for route
 -- ----------------------------
-DROP TABLE IF EXISTS `gateway_api_define`;
-CREATE TABLE `gateway_api_define` (
+DROP TABLE IF EXISTS `route`;
+CREATE TABLE `route` (
   `id` varchar(50) NOT NULL,
   `path` varchar(255) NOT NULL,
   `service_id` varchar(50) DEFAULT NULL,
@@ -34,10 +34,13 @@ CREATE TABLE `gateway_api_define` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of gateway_api_define
+-- Records of route
 -- ----------------------------
 BEGIN;
-INSERT INTO `gateway_api_define` VALUES ('book', '/book/**', NULL, 'http://127.0.0.1:8090', 0, 1, 1, NULL);
+INSERT INTO `route` VALUES ('book', '/book/**', NULL, 'http://127.0.0.1:8090', 0, 1, 1, NULL);
+INSERT INTO `route` VALUES ('k8s-mars', '/harmonycloud/**', NULL, 'http://10.100.100.116:8080', 0, 1, 1, NULL);
+INSERT INTO `route` VALUES ('springcloud-api', '/springcloud/**', 'SPRINGCLOUD-API', NULL, 0, 1, 1, NULL);
+
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;
