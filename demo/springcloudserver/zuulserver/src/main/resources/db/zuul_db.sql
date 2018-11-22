@@ -40,6 +40,8 @@ BEGIN;
 INSERT INTO `route` VALUES ('book', '/book/**', NULL, 'http://127.0.0.1:8090', 0, 1, 1, NULL);
 INSERT INTO `route` VALUES ('k8s-mars', '/harmonycloud/**', NULL, 'http://10.100.100.116:8080', 0, 1, 1, NULL);
 INSERT INTO `route` VALUES ('springcloud-api', '/springcloud/**', 'SPRINGCLOUD-API', NULL, 0, 1, 1, NULL);
+INSERT INTO `route` VALUES ('poc-api', '/poc/**', 'poc-hello', NULL, 0, 1, 1, NULL);
+
 
 COMMIT;
 

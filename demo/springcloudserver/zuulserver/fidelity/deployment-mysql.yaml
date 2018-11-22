@@ -1,0 +1,42 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: kube-system
+  name: global-zuul-mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      harmonycloud.cn/fidelity: demo
+  template:
+    metadata:
+      namespace: kube-system
+      labels:
+        harmonycloud.cn/fidelity: demo
+    spec:
+      nodeSelector:
+        harmonycloud.cn/fidelity: demo
+      containers:
+      - name: mysql
+        image: huanwei/mysql-master:v0.1
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+            value: "123456"
+        - name: MYSQL_REPLICATION_USER
+          value: "repl"
+        - name: MYSQL_REPLICAITON_PASSWORD
+          value: "123456"
+        ports:
+        - containerPort: 3306
+          hostPort: 3306
+          protocol: TCP
+        resources:
+          limits:
+            cpu: "1"
+            memory: "1Gi"
+          requests:
+            cpu: "0.5"
+            memory: "500Mi"
+      dnsPolicy: ClusterFirst
+      hostNetwork: true
