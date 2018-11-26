@@ -23,7 +23,7 @@ public class ZuulApplication {
         System.out.println("Zuul gateway started");
     }
 
-    //@Bean
+//    @Bean
     public CorsFilter corsFilter() {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         final CorsConfiguration config = new CorsConfiguration();

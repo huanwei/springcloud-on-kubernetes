@@ -1,0 +1,59 @@
+package cn.harmonycloud.springcloud.zuul.filter
+
+import com.alibaba.fastjson.JSONArray
+import com.alibaba.fastjson.JSONObject
+import com.netflix.zuul.ZuulFilter
+import com.netflix.zuul.context.RequestContext
+import org.springframework.stereotype.Component
+import org.springframework.web.client.RestTemplate
+
+import javax.servlet.http.HttpServletRequest
+
+@Component
+class TesterFilter extends ZuulFilter {
+    @Override
+    String filterType() {
+        return "pre"
+    }
+
+    @Override
+    int filterOrder() {
+        return 11
+    }
+
+    @Override
+    boolean shouldFilter() {
+        return true
+    }
+
+    @Override
+    Object run() {
+        RequestContext context = RequestContext.currentContext
+        HttpServletRequest request = context.getRequest()
+        JSONObject result = JSONObject.parseObject(new RestTemplate().getForObject("http://192.168.1.42:8761/eureka/apps/" + context.get("serviceId").toString() + "/", String.class))
+        String uri = getServiceStr(result)
+        String s = context.getZuulRequestHeaders().get("x-forwarded-prefix");
+        String pix = context.getRequest().getRequestURI().split(s)[1];
+        uri = "http://" + uri + pix
+        String a = new RestTemplate().getForObject(uri, String.class)
+        context.setResponseBody(a+":testzuul")
+        context.setSendZuulResponse(false)
+        return null
+    }
+
+    String getServiceStr(JSONObject obj) {
+        StringBuffer sb = new StringBuffer();
+
+        JSONArray resultList = obj.getJSONObject("application").getJSONArray("instance");
+        for (Object rs : resultList) {
+            JSONObject instaceService = (JSONObject) rs;
+            if (sb.length() != 0) {
+                sb.append(",");
+            }
+            String ipAddress = instaceService.getString("ipAddr");
+            sb.append(ipAddress + ":" + instaceService.getJSONObject("port").getString("\$"));
+        }
+
+        return sb.toString();
+    }
+}

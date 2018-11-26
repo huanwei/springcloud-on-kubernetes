@@ -36,57 +36,57 @@ class AuthFilter extends ZuulFilter {
 
     @Override
     Object run() {
-        RequestContext context = RequestContext.currentContext
-        HttpServletRequest request = context.getRequest()
-        HttpServletResponse response = context.getResponse()
-
-        //判断是否开启sso，开启则不执行拦截器的逻辑
-        // TODO 此处可以使用http请求查看sso是否开启
+//        RequestContext context = RequestContext.currentContext
+//        HttpServletRequest request = context.getRequest()
+//        HttpServletResponse response = context.getResponse()
+//
+//        判断是否开启sso，开启则不执行拦截器的逻辑
+//         TODO 此处可以使用http请求查看sso是否开启
 //        if (SsoClient.isOpen()) {
 //            return null;
 //        }
-        // 设置跨域访问header信息
-        if (StringUtils.isNotBlank(allowOrigin)) {
-            String origin = allowOrigin;
-            String requestOrigin = request.getHeader("Origin");
-            if (StringUtils.isNotBlank(requestOrigin)
-                    && (allowOrigin.equals("*") || allowOrigin.indexOf(requestOrigin) > -1)) {
-                origin = requestOrigin;
-            }
-            response.setHeader("Access-Control-Allow-Origin", origin);
-            response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT, PATCH");
-            response.setHeader("Access-Control-Max-Age", "1200");
-            response.setHeader("Access-Control-Allow-Headers", "X-Requested-With,Content-Type");
-            response.setHeader("Access-Control-Allow-Credentials", "true");
-        }
-        String httpMethod = request.getMethod();
-        if (HttpMethod.OPTIONS.name().equalsIgnoreCase(httpMethod)) {
-            return null;
-        }
-        // 获取请求的URL
-        String url = request.getRequestURI();
-        //路径包含openapi的不需要验证是否登陆，oam task定时任务没有用户
-        if (url.indexOf("/openapi/") > -1) {
-            return null;
-        }
-        // 判断是否为白名单中的请求地址，是直接返回验证成功
-        for (String whiteUrl : WHITE_URL_LIST) {
-            if (url.indexOf(whiteUrl) > -1) {
-                return null
-            }
-        }
-
-        // 获取Session
-        HttpSession session = request.getSession();
-        String username = (String) session.getAttribute("username");
-        if (username != null) {
-            return null
-        }
-
-        // 不符合条件的，返回401 Unauthorized
-        response.setStatus(401)
-        context.setSendZuulResponse(false)
-        return response
+//         设置跨域访问header信息
+//        if (StringUtils.isNotBlank(allowOrigin)) {
+//            String origin = allowOrigin;
+//            String requestOrigin = request.getHeader("Origin");
+//            if (StringUtils.isNotBlank(requestOrigin)
+//                    && (allowOrigin.equals("*") || allowOrigin.indexOf(requestOrigin) > -1)) {
+//                origin = requestOrigin;
+//            }
+//            response.setHeader("Access-Control-Allow-Origin", origin);
+//            response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT, PATCH");
+//            response.setHeader("Access-Control-Max-Age", "1200");
+//            response.setHeader("Access-Control-Allow-Headers", "X-Requested-With,Content-Type");
+//            response.setHeader("Access-Control-Allow-Credentials", "true");
+//        }
+//        String httpMethod = request.getMethod();
+//        if (HttpMethod.OPTIONS.name().equalsIgnoreCase(httpMethod)) {
+//            return null;
+//        }
+//         获取请求的URL
+//        String url = request.getRequestURI();
+//        路径包含openapi的不需要验证是否登陆，oam task定时任务没有用户
+//        if (url.indexOf("/openapi/") > -1) {
+//            return null;
+//        }
+//         判断是否为白名单中的请求地址，是直接返回验证成功
+//        for (String whiteUrl : WHITE_URL_LIST) {
+//            if (url.indexOf(whiteUrl) > -1) {
+//                return null
+//            }
+//        }
+//
+//         获取Session
+//        HttpSession session = request.getSession();
+//        String username = (String) session.getAttribute("username");
+//        if (username != null) {
+//            return null
+//        }
+//
+//         不符合条件的，返回401 Unauthorized
+//        response.setStatus(401)
+//        context.setSendZuulResponse(false)
+        return null
     }
 
 }
