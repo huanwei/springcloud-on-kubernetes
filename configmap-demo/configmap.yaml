@@ -1,0 +1,53 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: configmap-test
+  namespace: default
+data:
+  application.yml: |-
+      server:
+        port: 8091
+      spring:
+        application:
+          name: springcloud-feign
+        zipkin:
+          base-url: http://10.10.101.35:9411
+        sleuth:
+          sampler:
+            probability: 1.0
+      eureka:
+        instance:
+          preferIpAddress: true
+        client:
+          serviceUrl:
+            defaultZone: http://10.10.101.20:8762/eureka
+        server-name:
+          eureka-server-name1: SPRINGCLOUD-EUREKA
+      feign:
+        hystrix:
+          enabled: true
+      turbine:
+        app-config: springcloud-ribbon #配置Eureka中的serviceId列表，表明监控哪些服务
+        aggregator:
+          cluster-config: default #指定聚合哪些集群，多个使用”,”分割，默认为default。
+        cluster-name-expression: new String("default")
+      hystrix:
+        command:
+          default:
+            execution:
+              isolation:
+                thread:
+                  timeoutInMilliseconds: 2000
+                strategy: THREAD #线程池隔离 默认就是THREAD，还有一个是信号量隔离SEMAPHORE
+                semaphore:
+                  maxConcurrentRequests: 10 #设置最大的信号量，只对于使用信号量[SEMAPHORE]策略的生效 ，默认是10
+        threadpool: #这种设置方式针对于使用[THREAD]策略的生效
+          default:
+            coreSize: 15 #执行线程数 默认是10
+            maxQueueSize: 1  #设置使用哪种BlockingQueue，如果-1为SynchronousQueue；其他则为LinkedBlockingQueue 默认是-1
+            queueSizeRejectionThreshold: 5  #设置拒绝队列大小，这个属性是因为maxQueueSize无法动态改变，但需要去动态改变队列大小
+      ribbon:
+        ReadTimeout: 10000
+        ConnectTimeout: 10000
+      management.endpoints.web.exposure.include: refresh,health,info
+

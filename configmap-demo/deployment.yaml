@@ -1,0 +1,49 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: default
+  name: config-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: config-test
+  template:
+    metadata:
+      namespace: default
+      labels:
+        run: config-test
+    spec:
+      containers:
+      - name: config-test
+        image: huanwei/configmap-test
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 8091
+            hostPort: 8091
+            protocol: TCP
+        resources:
+          limits:
+            cpu: "1"
+            memory: "1Gi"
+          requests:
+            cpu: "0.5"
+            memory: "500Mi"
+        command:
+        - java
+        args:
+        - "-Djava.security.egd=file:/dev/./urandom"
+        - "-jar"
+        - "app.jar"
+        - "--spring.config.location=/tmp/config/"
+        volumeMounts:
+          - mountPath: "/tmp/config"
+            name: config-volume
+      dnsPolicy: ClusterFirst
+      hostNetwork: true
+      volumes:
+        - configMap:
+            name: configmap-test
+          name: config-volume
+      nodeSelector:
+        config-test: "on"
