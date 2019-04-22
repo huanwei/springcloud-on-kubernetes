@@ -1,0 +1,47 @@
+#################################
+# nohup java -server -Xms512m -Xmx4098m -Duser.timezone=GMT+08 -jar ccf-eureka-app-0.0.1-SNAPSHOT.jar --spring.profiles.active=peer1 --peer2.address=<ip>
+# nohup java -server -Xms512m -Xmx4098m -Duser.timezone=GMT+08 -jar ccf-eureka-app-0.0.1-SNAPSHOT.jar --spring.profiles.active=peer2 --peer1.address=<ip>
+#################################
+server: 
+  port: 8761
+spring:
+  application:
+    name: ccf-eureka-app
+eureka:
+  instance:
+    appname: ${spring.application.name}
+    hostname: ${spring.cloud.client.ip-address}
+    instance-id: ${spring.cloud.client.ip-address}:${spring.application.name}:${server.port}
+    lease-renewal-interval-in-seconds: 3 #Eureka服务器发送心跳以指示其仍处于活动状态的频率（秒）。
+    lease-expiration-duration-in-seconds: 9 #删除此实例之前以及在不允许此实例通信的情况下等待的时间（秒）。
+  server: 
+    enable-self-preservation: false #是否开启自我保护模式，默认为true
+    renewal-threshold-update-interval-ms: 3000 #阈值更新的时间间隔，单位为毫秒，默认为15 * 60 * 1000
+    eviction-interval-timer-in-ms: 3000 #过期实例应该启动并运行的时间间隔，单位为毫秒，默认为60 * 1000
+    response-cache-auto-expiration-in-seconds: 3 #当注册表信息被改变时，则其被保存在缓存中不失效的时间，默认为180秒
+    response-cache-update-interval-ms: 3000 #客户端的有效负载缓存应该更新的时间间隔，默认为30 * 1000毫秒
+    use-read-only-response-cache: false #目前采用的是二级缓存策略，一个是读写高速缓存过期策略，另一个没有过期只有只读缓存，默认为true
+management: 
+  endpoints:
+    enabled-by-default: true
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+---
+spring:
+  profiles: peer1
+eureka: 
+  client: 
+    service-url:
+      defaultZone: http://${peer2.address}:${server.port}/eureka/
+---
+spring:
+  profiles: peer2
+eureka:
+  client: 
+    service-url:
+      defaultZone: http://${peer1.address}:${server.port}/eureka/
+      
